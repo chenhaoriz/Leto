@@ -1,7 +1,9 @@
 package com.demo.kotlin
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -25,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         dataBinding.recycleView.adapter = testRecyclerAdapter
 
         startActivity(Intent(this, LetoActivity::class.java));
+
+        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+        intent.data = Uri.parse("package:" + this.packageName)
+        startActivity(intent)
     }
 
 

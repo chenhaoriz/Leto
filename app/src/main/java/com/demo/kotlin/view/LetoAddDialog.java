@@ -2,6 +2,7 @@ package com.demo.kotlin.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Environment;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.FileIOUtils;
+import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.GsonUtils;
 import com.demo.kotlin.R;
 import com.demo.kotlin.bean.BlueBall;
 import com.demo.kotlin.bean.LeToBean;
@@ -45,6 +49,7 @@ public class LetoAddDialog extends Dialog {
             if (onConfirmClickListener != null) {
                 onConfirmClickListener.onConfirm(getLetoBean());
             }
+            dismiss();
         });
     }
 

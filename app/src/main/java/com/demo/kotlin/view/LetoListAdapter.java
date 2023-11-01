@@ -3,7 +3,6 @@ package com.demo.kotlin.view;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +25,15 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
         return leToBeanList;
     }
 
+    private OnItemRemovedListener onItemRemovedListen;
+
+    public void setOnItemRemovedListen(OnItemRemovedListener onItemRemovedListen) {
+        this.onItemRemovedListen = onItemRemovedListen;
+    }
+
+    public interface OnItemRemovedListener{
+        void onRemoved();
+    }
 
     @NonNull
     @NotNull
@@ -50,6 +58,15 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
         BlueBall blueBall = leToBean.getBlueBall();
         holder.blueTV1.setText(String.valueOf(blueBall.getOne()));
         holder.blueTV2.setText(String.valueOf(blueBall.getTwo()));
+        holder.itemView.setOnLongClickListener(v -> {
+            //或者使用getLayoutPosition
+            leToBeanList.remove(holder.getAdapterPosition());
+            notifyItemRemoved(holder.getAdapterPosition());
+            if (onItemRemovedListen != null) {
+                onItemRemovedListen.onRemoved();
+            }
+            return false;
+        });
     }
 
     @Override

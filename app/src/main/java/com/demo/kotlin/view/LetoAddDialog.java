@@ -20,6 +20,8 @@ import com.demo.kotlin.bean.RedBall;
 import com.demo.kotlin.bean.SelectBallBean;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class LetoAddDialog extends Dialog {
@@ -58,8 +60,29 @@ public class LetoAddDialog extends Dialog {
             return null;
         }
         List<SelectBallBean> redList = redLetoAdapter.getSelectedBallList();
-        List<SelectBallBean> blueList = blueLetoAdapter.getSelectedBallList();
+        redList.sort(new Comparator<SelectBallBean>() {
+            @Override
+            public int compare(SelectBallBean o1, SelectBallBean o2) {
+                return o1.ballNum - o2.ballNum;
+            }
 
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }
+        });
+        List<SelectBallBean> blueList = blueLetoAdapter.getSelectedBallList();
+        blueList.sort(new Comparator<SelectBallBean>() {
+            @Override
+            public int compare(SelectBallBean o1, SelectBallBean o2) {
+                return o1.ballNum - o2.ballNum;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }
+        });
         RedBall redBall = new RedBall(redList.get(0).ballNum, redList.get(1).ballNum, redList.get(2).ballNum, redList.get(3).ballNum, redList.get(4).ballNum);
         BlueBall blueBall = new BlueBall(blueList.get(0).ballNum, blueList.get(1).ballNum);
         return new LeToBean(redBall, blueBall);

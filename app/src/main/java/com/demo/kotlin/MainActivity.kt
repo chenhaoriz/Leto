@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         testRecyclerAdapter = TestRecyclerAdapter(mutableListOf())
         dataBinding.recycleView.adapter = testRecyclerAdapter
 
-        startActivity(Intent(this, LetoActivity::class.java));
 
         val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
         intent.data = Uri.parse("package:" + this.packageName)
@@ -41,6 +40,7 @@ class MainActivity : AppCompatActivity() {
             ViewModelProvider.NewInstanceFactory()
         ).get(MainDataModel::class.java)
         mainDataModel.listModel?.observe(this, { list ->
+            startActivity(Intent(this, LetoActivity::class.java))
             testRecyclerAdapter!!.notifyDataSetChanged()
         })
         dataBinding.mainModel = mainDataModel

@@ -2,49 +2,46 @@ package com.demo.kotlin.view;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Environment;
-import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.FileIOUtils;
-import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.GsonUtils;
 import com.demo.kotlin.R;
 import com.demo.kotlin.bean.BlueBall;
 import com.demo.kotlin.bean.LeToBean;
 import com.demo.kotlin.bean.RedBall;
 import com.demo.kotlin.bean.SelectBallBean;
+import com.demo.kotlin.utils.LottoNumberGenerator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class LetoAddDialog extends Dialog {
 
-
     private final AddLetoAdapter redLetoAdapter;
     private final AddLetoAdapter blueLetoAdapter;
+    private final Button confirmBtn;
 
     public LetoAddDialog(@NonNull Context context) {
-        super(context);
+        super(context, R.style.Theme_MaterialComponents_DayNight_DialogWhenLarge);
         setContentView(R.layout.add_leto_dialog);
-        View confirmBtn = findViewById(R.id.add_btn_confirm_btn);
-
+        confirmBtn = findViewById(R.id.add_btn_confirm_btn);
+        Button randomBtn = findViewById(R.id.random_num_btn);
+        randomBtn.setOnClickListener(v -> randomNum());
         RecyclerView redBallRecyclerView = findViewById(R.id.red_ball_recycler_view);
-        redBallRecyclerView.setLayoutManager(new GridLayoutManager(context, 5, LinearLayoutManager.VERTICAL, false));
+        redBallRecyclerView.setLayoutManager(new GridLayoutManager(context, 7, LinearLayoutManager.VERTICAL, false));
         redLetoAdapter = new AddLetoAdapter(getRedBallList(), true);
-        redLetoAdapter.setOnItemClickListener(selectBallBean -> confirmBtn.setAlpha(checkConfirmBtn() ? 1f : 0.2f));
+        redLetoAdapter.setOnItemClickListener(selectBallBean -> updateConfirmBtn());
         redBallRecyclerView.setAdapter(redLetoAdapter);
 
         RecyclerView blueBallRecyclerView = findViewById(R.id.blue_ball_recycler_view);
-        blueBallRecyclerView.setLayoutManager(new GridLayoutManager(context, 5, LinearLayoutManager.VERTICAL, false));
+        blueBallRecyclerView.setLayoutManager(new GridLayoutManager(context, 7, LinearLayoutManager.VERTICAL, false));
         blueLetoAdapter = new AddLetoAdapter(getBlueBallList(), false);
-        blueLetoAdapter.setOnItemClickListener(selectBallBean -> confirmBtn.setAlpha(checkConfirmBtn() ? 1f : 0.2f));
+        blueLetoAdapter.setOnItemClickListener(selectBallBean -> updateConfirmBtn());
         blueBallRecyclerView.setAdapter(blueLetoAdapter);
 
         confirmBtn.setOnClickListener(v -> {
@@ -53,6 +50,30 @@ public class LetoAddDialog extends Dialog {
             }
             dismiss();
         });
+        confirmBtn.setClickable(false);
+    }
+
+    private void randomNum() {
+        List<Integer> mainNumbers = LottoNumberGenerator.generateMainNumbers();
+        List<SelectBallBean> red = redLetoAdapter.getBallList();
+        for (int i = 0; i < red.size(); i++) {
+            SelectBallBean selectBallBean = red.get(i);
+            selectBallBean.isSelected = mainNumbers.contains(selectBallBean.ballNum);
+            redLetoAdapter.notifyItemChanged(i);
+        }
+        List<Integer> specialNumbers = LottoNumberGenerator.generateSpecialNumbers();
+        List<SelectBallBean> blue = blueLetoAdapter.getBallList();
+        for (int i = 0; i < blue.size(); i++) {
+            SelectBallBean ballNum = blue.get(i);
+            ballNum.isSelected = specialNumbers.contains(ballNum.ballNum);
+            blueLetoAdapter.notifyItemChanged(i);
+        }
+        updateConfirmBtn();
+    }
+
+    private void updateConfirmBtn() {
+        confirmBtn.setAlpha(checkConfirmBtn() ? 1f : 0.5f);
+        confirmBtn.setClickable(checkConfirmBtn());
     }
 
     private LeToBean getLetoBean() {

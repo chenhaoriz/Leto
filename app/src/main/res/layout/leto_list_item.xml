@@ -11,6 +11,8 @@
         android:layout_height="50dp"
         android:background="@drawable/red_ball_bg_shape"
         android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:text="1"
         android:textColor="#ffffff" />
 
@@ -20,6 +22,8 @@
         android:layout_height="50dp"
         android:background="@drawable/red_ball_bg_shape"
         android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:text="1"
         android:textColor="#ffffff" />
 
@@ -27,6 +31,8 @@
         android:id="@+id/red_tv_3"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:background="@drawable/red_ball_bg_shape"
         android:gravity="center"
         android:text="1"
@@ -36,6 +42,8 @@
         android:id="@+id/red_tv_4"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:background="@drawable/red_ball_bg_shape"
         android:gravity="center"
         android:text="1"
@@ -48,6 +56,8 @@
         android:background="@drawable/red_ball_bg_shape"
         android:gravity="center"
         android:text="1"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:textColor="#ffffff" />
 
     <TextView
@@ -56,6 +66,8 @@
         android:layout_height="50dp"
         android:background="@drawable/blue_ball_bg_shape"
         android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:text="1"
         android:textColor="#ffffff" />
 
@@ -66,6 +78,8 @@
         android:background="@drawable/blue_ball_bg_shape"
         android:gravity="center"
         android:text="1"
+        android:textStyle="bold"
+        android:textSize="16dp"
         android:textColor="#ffffff" />
 
 </LinearLayout>

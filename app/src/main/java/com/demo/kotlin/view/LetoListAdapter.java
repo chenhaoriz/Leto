@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoListHolder> {
-    private final List<LeToBean> leToBeanList = new ArrayList<>();
+    private final List<LeToBean> leToBeanList;
 
-    public List<LeToBean> getLeToBeanList() {
-        return leToBeanList;
+    public LetoListAdapter(List<LeToBean> leToBeanList) {
+        this.leToBeanList = leToBeanList;
     }
 
     private OnItemRemovedListener onItemRemovedListen;
@@ -31,8 +31,8 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
         this.onItemRemovedListen = onItemRemovedListen;
     }
 
-    public interface OnItemRemovedListener{
-        void onRemoved();
+    public interface OnItemRemovedListener {
+        void onRemoved(int position);
     }
 
     @NonNull
@@ -59,11 +59,8 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
         holder.blueTV1.setText(String.valueOf(blueBall.getOne()));
         holder.blueTV2.setText(String.valueOf(blueBall.getTwo()));
         holder.itemView.setOnLongClickListener(v -> {
-            //或者使用getLayoutPosition
-            leToBeanList.remove(holder.getAdapterPosition());
-            notifyItemRemoved(holder.getAdapterPosition());
             if (onItemRemovedListen != null) {
-                onItemRemovedListen.onRemoved();
+                onItemRemovedListen.onRemoved(holder.getAdapterPosition());
             }
             return false;
         });

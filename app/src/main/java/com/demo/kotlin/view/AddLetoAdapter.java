@@ -1,5 +1,6 @@
 package com.demo.kotlin.view;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddLetoAdapter extends RecyclerView.Adapter<AddLetoAdapter.RedBallHolder> {
-    private final List<SelectBallBean> redBalls;
-    private final List<SelectBallBean> selectedBallList = new ArrayList<>();
+    private final List<SelectBallBean> list = new ArrayList<>();
 
     private final boolean isRed;
 
     public AddLetoAdapter(List<SelectBallBean> redBalls, boolean isRed) {
-        this.redBalls = redBalls;
         this.isRed = isRed;
+        this.list.addAll(redBalls);
     }
 
     @NonNull
@@ -38,43 +38,44 @@ public class AddLetoAdapter extends RecyclerView.Adapter<AddLetoAdapter.RedBallH
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull RedBallHolder holder, int position) {
-        SelectBallBean selectBallBean = redBalls.get(position);
-        holder.textView.setBackgroundResource(isRed ? R.drawable.red_ball_bg_shape : R.drawable.blue_ball_bg_shape);
-        holder.textView.setText(String.valueOf(selectBallBean.ballNum));
-        holder.textView.setAlpha(selectBallBean.isSelected ? 1 : 0.5f);
+        SelectBallBean bean = list.get(position);
+        holder.textView.setBackgroundResource(getBallBgResid(bean.isSelected));
+        holder.textView.setTextColor(bean.isSelected ? Color.WHITE : isRed ? Color.RED : Color.BLUE);
+        holder.textView.setText(String.valueOf(bean.ballNum));
+        holder.textView.setAlpha(bean.isSelected ? 1 : 0.5f);
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                List<SelectBallBean> selectedBallList = getSelectedBallList();
                 if (isRed) {
-                    if (selectedBallList.size() == 5 && !selectBallBean.isSelected) {
+                    if (selectedBallList.size() == 5 && !bean.isSelected) {
                         return;
                     }
                 } else {
-                    if (selectedBallList.size() == 2 && !selectBallBean.isSelected) {
+                    if (selectedBallList.size() == 2 && !bean.isSelected) {
                         return;
                     }
                 }
-                selectBallBean.isSelected = !selectBallBean.isSelected;
-                if (selectBallBean.isSelected) {
-                    selectedBallList.add(selectBallBean);
-                }else {
-                    selectedBallList.remove(selectBallBean);
-                }
+                bean.isSelected = !bean.isSelected;
                 notifyItemChanged(position);
                 if (onItemClickListener != null) {
-                    onItemClickListener.onClick(selectBallBean);
+                    onItemClickListener.onClick(bean);
                 }
             }
         });
     }
 
+    private int getBallBgResid(boolean isSelected) {
+        return isSelected ? (isRed ? R.drawable.red_ball_bg_shape : R.drawable.blue_ball_bg_shape) : R.drawable.default_ball_bg_shape;
+    }
+
     @Override
     public int getItemCount() {
-        return redBalls == null ? 0 : redBalls.size();
+        return list.size();
     }
 
     public static class RedBallHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
+        private final TextView textView;
 
         public RedBallHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -93,6 +94,17 @@ public class AddLetoAdapter extends RecyclerView.Adapter<AddLetoAdapter.RedBallH
     }
 
     public List<SelectBallBean> getSelectedBallList() {
-        return selectedBallList;
+        List<SelectBallBean> selectBallBeans = new ArrayList<>();
+        List<SelectBallBean> ballList = getBallList();
+        for (SelectBallBean selectBallBean : ballList) {
+            if (selectBallBean.isSelected) {
+                selectBallBeans.add(selectBallBean);
+            }
+        }
+        return selectBallBeans;
+    }
+
+    public List<SelectBallBean> getBallList() {
+        return list;
     }
 }

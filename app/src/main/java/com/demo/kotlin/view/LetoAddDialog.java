@@ -17,6 +17,7 @@ import com.demo.kotlin.bean.SelectBallBean;
 import com.demo.kotlin.utils.LottoNumberGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class LetoAddDialog extends Dialog {
     private final AddLetoAdapter redLetoAdapter;
     private final AddLetoAdapter blueLetoAdapter;
     private final Button confirmBtn;
+    private boolean isEditBall = false;
+    private String mBallId;
 
     public LetoAddDialog(@NonNull Context context) {
         super(context, R.style.Theme_MaterialComponents_DayNight_DialogWhenLarge);
@@ -46,7 +49,7 @@ public class LetoAddDialog extends Dialog {
 
         confirmBtn.setOnClickListener(v -> {
             if (onConfirmClickListener != null) {
-                onConfirmClickListener.onConfirm(getLetoBean());
+                onConfirmClickListener.onConfirm(isEditBall, getLetoBean());
             }
             dismiss();
         });
@@ -106,7 +109,7 @@ public class LetoAddDialog extends Dialog {
         });
         RedBall redBall = new RedBall(redList.get(0).ballNum, redList.get(1).ballNum, redList.get(2).ballNum, redList.get(3).ballNum, redList.get(4).ballNum);
         BlueBall blueBall = new BlueBall(blueList.get(0).ballNum, blueList.get(1).ballNum);
-        return new LeToBean(redBall, blueBall);
+        return new LeToBean(mBallId, redBall, blueBall);
     }
 
     private boolean checkConfirmBtn() {
@@ -136,6 +139,38 @@ public class LetoAddDialog extends Dialog {
     }
 
     public interface OnConfirmClickListener {
-        void onConfirm(LeToBean letoBean);
+        void onConfirm(boolean isEditBall, LeToBean letoBean);
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        isEditBall = false;
+    }
+
+    public void show(LeToBean leToBean) {
+        super.show();
+        if (leToBean == null) {
+            return;
+        }
+        isEditBall = true;
+        mBallId = leToBean.id;
+        RedBall redBall = leToBean.getRedBall();
+        List<Integer> mainNumbers = new ArrayList<>(Arrays.asList(redBall.getOne(), redBall.getTwo(), redBall.getThree(), redBall.getFour(), redBall.getFive()));
+        List<SelectBallBean> red = redLetoAdapter.getBallList();
+        for (int i = 0; i < red.size(); i++) {
+            SelectBallBean selectBallBean = red.get(i);
+            selectBallBean.isSelected = mainNumbers.contains(selectBallBean.ballNum);
+            redLetoAdapter.notifyItemChanged(i);
+        }
+        BlueBall blueBall = leToBean.getBlueBall();
+        List<Integer> specialNumbers = new ArrayList<>(Arrays.asList(blueBall.getOne(), blueBall.getTwo()));
+        List<SelectBallBean> blue = blueLetoAdapter.getBallList();
+        for (int i = 0; i < blue.size(); i++) {
+            SelectBallBean ballNum = blue.get(i);
+            ballNum.isSelected = specialNumbers.contains(ballNum.ballNum);
+            blueLetoAdapter.notifyItemChanged(i);
+        }
+        updateConfirmBtn();
     }
 }

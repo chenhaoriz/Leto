@@ -31,6 +31,7 @@ public class LetoActivity extends BaseActivity {
     private LinearLayout mProbabilityView;
     private LetoViewModel viewModel;
     private HeaderAndFooterWrapper<Object> wrapper;
+    private LetoAddDialog addDialog;
 
     @Override
     protected int getContentLayoutId() {
@@ -50,6 +51,7 @@ public class LetoActivity extends BaseActivity {
             }
         });
         viewModel.addLetoLiveData.observe(this, le -> wrapper.notifyDataSetChanged());
+        viewModel.updateLetoLiveData.observe(this, le -> wrapper.notifyDataSetChanged());
         viewModel.removeLetoLiveData.observe(this, position -> wrapper.notifyItemRemoved(position));
         viewModel.ballProbabilityLiveData.observe(this, this::updateHeadView);
         viewModel.getHistoryLetoList();
@@ -71,11 +73,15 @@ public class LetoActivity extends BaseActivity {
     @Override
     protected void initView() {
         View addBallBtn = findViewById(R.id.add_ball_btn);
-        LetoAddDialog addDialog = new LetoAddDialog(this);
+        addDialog = new LetoAddDialog(this);
         addDialog.setOnConfirmClickListener(new LetoAddDialog.OnConfirmClickListener() {
             @Override
-            public void onConfirm(LeToBean letoBean) {
-                viewModel.addLetoItem(letoBean);
+            public void onConfirm(boolean isEditBall, LeToBean letoBean) {
+                if (isEditBall) {
+                    viewModel.updateLetoItem(letoBean);
+                } else {
+                    viewModel.addLetoItem(letoBean);
+                }
             }
         });
         addBallBtn.setOnClickListener(v -> addDialog.show());
@@ -93,6 +99,12 @@ public class LetoActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         LetoListAdapter letoListAdapter = new LetoListAdapter(list);
         letoListAdapter.setOnItemRemovedListen(position -> viewModel.removeItem(position));
+        letoListAdapter.setOnItemEditListener(leToBean -> {
+            if (addDialog == null) {
+                addDialog = new LetoAddDialog(mContext);
+            }
+            addDialog.show(leToBean);
+        });
         wrapper = new HeaderAndFooterWrapper<>(letoListAdapter);
         wrapper.addHeaderView(mProbabilityView);
         recyclerView.setAdapter(wrapper);
@@ -123,5 +135,8 @@ public class LetoActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         viewModel.saveHistory();
+        if (addDialog != null) {
+            addDialog.dismiss();
+        }
     }
 }

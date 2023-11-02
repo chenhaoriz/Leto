@@ -27,12 +27,22 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
 
     private OnItemRemovedListener onItemRemovedListen;
 
+    public void setOnItemEditListener(OnItemEditListener onItemEditListener) {
+        this.onItemEditListener = onItemEditListener;
+    }
+
+    private OnItemEditListener onItemEditListener;
+
     public void setOnItemRemovedListen(OnItemRemovedListener onItemRemovedListen) {
         this.onItemRemovedListen = onItemRemovedListen;
     }
 
     public interface OnItemRemovedListener {
         void onRemoved(int position);
+    }
+
+    public interface OnItemEditListener {
+        void onEdited(LeToBean leToBean);
     }
 
     @NonNull
@@ -46,6 +56,16 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
     @Override
     public void onBindViewHolder(@NonNull @NotNull LetoListHolder holder, int position) {
         LeToBean leToBean = leToBeanList.get(position);
+        holder.deleteBtn.setOnClickListener(v -> {
+            if (onItemRemovedListen != null) {
+                onItemRemovedListen.onRemoved(holder.getAdapterPosition());
+            }
+        });
+        holder.editBtn.setOnClickListener(v -> {
+            if (onItemEditListener != null) {
+                onItemEditListener.onEdited(leToBean);
+            }
+        });
         if (leToBean == null) {
             return;
         }
@@ -58,12 +78,6 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
         BlueBall blueBall = leToBean.getBlueBall();
         holder.blueTV1.setText(String.valueOf(blueBall.getOne()));
         holder.blueTV2.setText(String.valueOf(blueBall.getTwo()));
-        holder.itemView.setOnLongClickListener(v -> {
-            if (onItemRemovedListen != null) {
-                onItemRemovedListen.onRemoved(holder.getAdapterPosition());
-            }
-            return false;
-        });
     }
 
     @Override
@@ -80,6 +94,8 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
         private final TextView redTV5;
         private final TextView blueTV1;
         private final TextView blueTV2;
+        private final View deleteBtn;
+        private final View editBtn;
 
         public LetoListHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -91,6 +107,8 @@ public class LetoListAdapter extends RecyclerView.Adapter<LetoListAdapter.LetoLi
 
             blueTV1 = itemView.findViewById(R.id.blue_tv_1);
             blueTV2 = itemView.findViewById(R.id.blue_tv_2);
+            deleteBtn = itemView.findViewById(R.id.delete_ball_btn);
+            editBtn = itemView.findViewById(R.id.edit_ball_btn);
         }
     }
 }

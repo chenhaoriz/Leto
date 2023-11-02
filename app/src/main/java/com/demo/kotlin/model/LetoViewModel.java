@@ -29,6 +29,7 @@ public class LetoViewModel extends ViewModel {
     public MutableLiveData<Boolean> saveHistoryData = new MutableLiveData<>();
     public MutableLiveData<List<String>> ballProbabilityLiveData = new MutableLiveData<>();
     public MutableLiveData<LeToBean> addLetoLiveData = new MutableLiveData<>();
+    public MutableLiveData<LeToBean> updateLetoLiveData = new MutableLiveData<>();
     public MutableLiveData<Integer> removeLetoLiveData = new MutableLiveData<>();
 
     public void getHistoryLetoList() {
@@ -166,12 +167,31 @@ public class LetoViewModel extends ViewModel {
         updateProbability();
     }
 
+    public void updateLetoItem(LeToBean le) {
+        List<LeToBean> value = letoListLiveData.getValue();
+        if (value == null) {
+            return;
+        }
+        for (LeToBean leToBean : value) {
+            if (leToBean.id == null) {
+                continue;
+            }
+            if (leToBean.id.equals(le.id)) {
+                leToBean = le;
+                updateLetoLiveData.setValue(leToBean);
+                updateProbability();
+                break;
+            }
+        }
+    }
+
+
     public void removeItem(int le) {
         List<LeToBean> value = letoListLiveData.getValue();
         if (value == null) {
             return;
         }
-        value.remove(le-1);
+        value.remove(le - 1);
         removeLetoLiveData.setValue(le);
         updateProbability();
     }

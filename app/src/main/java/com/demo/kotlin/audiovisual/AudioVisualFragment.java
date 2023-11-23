@@ -2,6 +2,7 @@ package com.demo.kotlin.audiovisual;
 
 import android.animation.ValueAnimator;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -102,6 +103,15 @@ public class AudioVisualFragment extends BaseFragment {
                     if (getActivity() != null) {
                         Window window = getActivity().getWindow();
                         window.setStatusBarColor(color);
+                        // 自动调整状态栏中的文字和图标颜色
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            // 如果背景颜色是浅色，使用深色状态栏符号
+                            if (isColorLight(color)) {
+                                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                            } else {
+                                window.getDecorView().setSystemUiVisibility(0);
+                            }
+                        }
                     }
                 });
                 colorAnimation.start();
@@ -110,6 +120,23 @@ public class AudioVisualFragment extends BaseFragment {
             }
         });
     }
+
+    // 辅助方法来检测颜色是不是浅色
+    private boolean isColorLight(int color) {
+        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+        // It's a light color if darkness < 0.5
+        return darkness < 0.5;
+    }
+    private void updateStatusBarIcons(Window window, int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (isColorLight(color)) {
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            } else {
+                window.getDecorView().setSystemUiVisibility(0);
+            }
+        }
+    }
+
 
 }
 
